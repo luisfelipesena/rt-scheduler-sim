@@ -1,0 +1,23 @@
+[project]
+name = "rt-scheduler-sim"
+version = "1.0.0"
+description = "Discrete-event simulator for real-time task scheduling (RM, DM, EDF)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "Luis Sena" },
+  { name = "Antoniel Magalhães" },
+]
+keywords = ["real-time", "scheduling", "rate-monotonic", "edf", "discrete-event-simulation"]
+dependencies = []
+
+[project.scripts]
+rtsim = "rtsim.cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["rtsim"]

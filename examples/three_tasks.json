@@ -1,0 +1,9 @@
+{
+  "name": "three_tasks",
+  "comment": "Three tasks, U=0.65. Feasible under RM, DM and EDF. Nice readable Gantt over a 20-unit hyperperiod.",
+  "tasks": [
+    { "id": 1, "name": "T1", "wcet": 1, "period": 4 },
+    { "id": 2, "name": "T2", "wcet": 1, "period": 5 },
+    { "id": 3, "name": "T3", "wcet": 2, "period": 10 }
+  ]
+}

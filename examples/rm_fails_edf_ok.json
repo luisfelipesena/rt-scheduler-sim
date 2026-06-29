@@ -1,0 +1,8 @@
+{
+  "name": "rm_fails_edf_ok",
+  "comment": "U=0.971 (< 1). Classic case: RM misses T2's first deadline at t=7, EDF meets all. Shows why EDF reaches 100% utilization while fixed-priority does not.",
+  "tasks": [
+    { "id": 1, "name": "T1", "wcet": 2, "period": 5 },
+    { "id": 2, "name": "T2", "wcet": 4, "period": 7 }
+  ]
+}

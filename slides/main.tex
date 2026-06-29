@@ -1,0 +1,308 @@
+\documentclass[aspectratio=169,xcolor=table]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{csquotes}
+\usepackage{xcolor}
+\usepackage[portuguese]{babel}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{listings}
+
+% ------------------------------------------------
+% Tema DCC (Instituto de Computacao - UFBA)
+% ------------------------------------------------
+\usetheme{DCC}
+
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{itemize subitem}[circle]
+\setlength{\itemsep}{0.8em}
+\setlength{\parskip}{0.5em}
+
+\graphicspath{{imgs/}{./imgs/}}
+
+% Cores do Gantt (iguais as do simulador)
+\definecolor{t1col}{HTML}{4E79A7}
+\definecolor{t2col}{HTML}{F28E2B}
+\definecolor{latecol}{HTML}{D62728}
+\definecolor{okcol}{HTML}{59A14F}
+
+% Estilo de codigo
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{t1col}\bfseries,
+  commentstyle=\color{okcol},
+  stringstyle=\color{t2col},
+  showstringspaces=false,
+  columns=fullflexible,
+  breaklines=true,
+}
+
+% Bloco do Gantt: #1 xinicio #2 xfim #3 ybase #4 cor #5 rotulo
+\newcommand{\gblock}[5]{%
+  \fill[#4, draw=black, line width=0.4pt, rounded corners=1.5pt]
+    (#1,#3) rectangle (#2,#3+0.6);
+  \node[font=\tiny, text=white] at ({(#1+#2)/2},#3+0.3) {#5};
+}
+% Marcador de liberacao (triangulo verde para cima)
+\newcommand{\grel}[2]{\fill[okcol] (#1,#2) -- (#1-0.13,#2-0.22) -- (#1+0.13,#2-0.22) -- cycle;}
+
+\author[Luis \& Antoniel]{\textbf{Luis Sena} \and \textbf{Antoniel Magalhães}}
+\title{Simulador de Escalonamento de Tempo Real}
+\subtitle{Simulação a eventos discretos: Rate Monotonic vs.\ EDF}
+\institute{Universidade Federal da Bahia \\ Instituto de Computação \\ Sistemas de Tempo Real}
+\date{\today}
+
+\begin{document}
+
+%-------------------------------------------------
+\begin{frame}[plain,noframenumbering]
+    \titlepage
+\end{frame}
+
+%-------------------------------------------------
+\begin{frame}{Agenda (10 min)}
+    \begin{table}
+        \begin{tabularx}{\textwidth}{|l|X|l|}
+            \hline
+            \textbf{Bloco} & \textbf{Conteúdo} & \textbf{Quem} \\
+            \hline
+            Parte 1 & Sistemas de tempo real, modelo de tarefas, simulação a eventos e os algoritmos (RM, DM, EDF) & \textbf{Luis} \\
+            \hline
+            Parte 2 & Arquitetura do simulador, demonstração ao vivo, resultados e validação & \textbf{Antoniel} \\
+            \hline
+        \end{tabularx}
+    \end{table}
+    \begin{center}
+        \small Objetivo: simular o escalonamento de tarefas de tempo real por
+        \textbf{dois ou mais} algoritmos, avançando \textbf{de evento em evento}.
+    \end{center}
+\end{frame}
+
+%=================================================
+\section{Fundamentos}
+%=================================================
+\begin{frame}{O problema: sistemas de tempo real}
+    \begin{itemize}
+        \item Em tempo real, o resultado certo \textbf{tarde} é um resultado \textbf{errado}: a correção depende do tempo.
+        \item Modelamos a carga como \textbf{tarefas periódicas}. Cada tarefa libera uma sequência infinita de \textbf{jobs}.
+        \item Cada job precisa de CPU e tem um \textbf{deadline}. A pergunta central:
+        \begin{center}
+            \emph{este conjunto de tarefas é escalonável sem perder nenhum deadline?}
+        \end{center}
+        \item Duas formas de responder: \textbf{testes analíticos} (utilização) e \textbf{simulação} do escalonamento.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Modelo de tarefas}
+    Cada tarefa $\tau_i$ é definida por:
+    \begin{itemize}
+        \item $C_i$: tempo de execução no pior caso (\emph{WCET});
+        \item $T_i$: período (intervalo entre liberações de jobs);
+        \item $D_i$: deadline relativo (usamos $D_i = T_i$, deadline implícito);
+        \item $\phi_i$: fase (instante da primeira liberação).
+    \end{itemize}
+    \vspace{0.4em}
+    \textbf{Utilização} do sistema:
+    \[
+        U = \sum_{i=1}^{n} \frac{C_i}{T_i}
+    \]
+    Fração da CPU exigida pelas tarefas. $U > 1$ é sobrecarga: \emph{impossível} escalonar.
+\end{frame}
+
+\begin{frame}{Simulação a eventos discretos}
+    \begin{itemize}
+        \item Em vez de avançar o tempo de 1 em 1 unidade, \textbf{saltamos de evento em evento}.
+        \item Entre dois eventos consecutivos, o job de \textbf{maior prioridade} executa sem interrupção.
+        \item Eventos que movem a simulação:
+        \begin{itemize}
+            \item \textbf{Liberação} de job (uma tarefa cria um novo job);
+            \item \textbf{Término} de job (um job termina sua execução).
+        \end{itemize}
+        \item Próximo evento $=\min(\text{próxima liberação},\ \text{término do job atual})$.
+        \item \textbf{Preempção} surge naturalmente: ao liberar um job de maior prioridade, ele assume a CPU.
+        \item Perda de deadline é uma \textbf{observação derivada} (não é um evento de escalonamento).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Os algoritmos}
+    \begin{itemize}
+        \item \textbf{Rate Monotonic (RM)} -- prioridade \textbf{estática}: menor período, maior prioridade. (Liu \& Layland, 1973)
+        \item \textbf{Deadline Monotonic (DM)} -- prioridade estática: menor deadline relativo, maior prioridade.
+        \item \textbf{Earliest Deadline First (EDF)} -- prioridade \textbf{dinâmica}: o job com o deadline absoluto mais próximo executa.
+    \end{itemize}
+    \vspace{0.3em}
+    \begin{block}{Uma só abstração}
+        Toda política é uma \textbf{chave de prioridade}: \texttt{(menor chave = maior prioridade)}.
+        O motor sempre roda o job de menor chave. RM, DM e EDF diferem \emph{apenas} na chave.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Testes de escalonabilidade}
+    \begin{itemize}
+        \item \textbf{RM (suficiente)} -- limite de Liu \& Layland:
+        \[
+            U \le n\left(2^{1/n}-1\right) \xrightarrow{n\to\infty} \ln 2 \approx 0{,}693
+        \]
+        Se $U$ está abaixo do limite, RM \emph{garante} escalonabilidade.
+        \item \textbf{EDF (exato)} -- para deadline implícito:
+        \[
+            U \le 1 \iff \text{escalonável}
+        \]
+        \item Por isso EDF alcança \textbf{100\%} de utilização, enquanto prioridade fixa fica perto de 69\% no pior caso.
+        \item A simulação confirma na prática o que o teste prevê na teoria.
+    \end{itemize}
+\end{frame}
+
+%=================================================
+\section{Simulador, demo e resultados}
+%=================================================
+\begin{frame}[fragile]{Arquitetura do simulador}
+    Python puro (biblioteca padrão), sem dependências. Núcleo de poucas centenas de linhas:
+    \begin{itemize}
+        \item \texttt{model.py} -- \texttt{Task}, \texttt{Job}, \texttt{TaskSet} (carrega JSON);
+        \item \texttt{schedulers.py} -- políticas RM / DM / EDF como chaves de prioridade;
+        \item \texttt{simulator.py} -- laço de eventos (libera, escolhe, executa, termina);
+        \item \texttt{metrics.py} -- utilização e testes de escalonabilidade;
+        \item \texttt{gantt.py} -- diagrama de Gantt em ASCII e SVG;
+        \item \texttt{cli.py} -- comandos \texttt{run}, \texttt{compare}, \texttt{analyze}.
+    \end{itemize}
+    \begin{lstlisting}[language=Python]
+running = min(ready, key=lambda j: policy.key(j, t))
+t_next  = min(completion, next_release)  # salta para o evento
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Demonstração ao vivo}
+    Conjunto: $\tau_1=(C{=}2,\,T{=}5)$ e $\tau_2=(C{=}4,\,T{=}7)$, com $U = 0{,}971 < 1$.
+    \begin{lstlisting}[language=bash]
+$ python -m rtsim compare examples/rm_fails_edf_ok.json \
+        --algos RM EDF --verbose
+    \end{lstlisting}
+    \begin{itemize}
+        \item Mesma carga, dois algoritmos, lado a lado.
+        \item RM (prioridade fixa) e EDF (prioridade dinâmica) tomam decisões diferentes a partir de $t=5$.
+        \item A seguir, o diagrama de Gantt gerado pelo próprio simulador.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Resultado: RM perde o deadline}
+    \begin{center}
+    \begin{tikzpicture}[font=\scriptsize]
+        % grade de tempo 0..14
+        \foreach \t in {0,...,14}{
+            \draw[gray!25] (\t,0) -- (\t,1.9);
+            \node[gray, font=\tiny, below] at (\t,0) {\t};
+        }
+        \node[left, font=\small] at (0,1.6) {$\tau_1$};
+        \node[left, font=\small] at (0,0.6) {$\tau_2$};
+        % tau1: lane y=1.3..1.9
+        \gblock{0}{2}{1.3}{t1col}{}
+        \gblock{5}{7}{1.3}{t1col}{}
+        \gblock{10}{12}{1.3}{t1col}{}
+        % tau2: lane y=0.3..0.9
+        \gblock{2}{5}{0.3}{t2col}{}
+        \gblock{7}{8}{0.3}{latecol}{}   % 4o tick, atrasado
+        \gblock{8}{10}{0.3}{t2col}{}
+        \gblock{12}{14}{0.3}{t2col}{}
+        % liberacoes
+        \grel{0}{1.3} \grel{5}{1.3} \grel{10}{1.3}
+        \grel{0}{0.3} \grel{7}{0.3} \grel{14}{0.3}
+        % deadline perdido em t=7
+        \draw[latecol, very thick, ->] (7,2.35) -- (7,0.95);
+        \node[latecol, font=\scriptsize\bfseries, above] at (7,2.3) {deadline de $\tau_2$ perdido em $t=7$};
+    \end{tikzpicture}
+    \end{center}
+    \footnotesize
+    Em $t=5$, $\tau_1$ preempta $\tau_2$. $\tau_2$ ainda devia 1 unidade quando seu deadline ($t=7$) chegou: \textbf{perda}. Pior tempo de resposta de $\tau_2 = 8 > 7$.
+\end{frame}
+
+\begin{frame}{Resultado: EDF cumpre todos os deadlines}
+    \begin{center}
+    \begin{tikzpicture}[font=\scriptsize]
+        \foreach \t in {0,...,14}{
+            \draw[gray!25] (\t,0) -- (\t,1.9);
+            \node[gray, font=\tiny, below] at (\t,0) {\t};
+        }
+        \node[left, font=\small] at (0,1.6) {$\tau_1$};
+        \node[left, font=\small] at (0,0.6) {$\tau_2$};
+        % tau1
+        \gblock{0}{2}{1.3}{t1col}{}
+        \gblock{6}{8}{1.3}{t1col}{}
+        \gblock{12}{14}{1.3}{t1col}{}
+        % tau2
+        \gblock{2}{6}{0.3}{t2col}{}
+        \gblock{8}{12}{0.3}{t2col}{}
+        % liberacoes
+        \grel{0}{1.3} \grel{5}{1.3} \grel{10}{1.3}
+        \grel{0}{0.3} \grel{7}{0.3} \grel{14}{0.3}
+        % deadline cumprido
+        \draw[okcol, very thick, ->] (7,2.35) -- (7,0.95);
+        \node[okcol, font=\scriptsize\bfseries, above] at (7,2.3) {$\tau_2$ termina em $t=6$, antes do deadline ($t=7$)};
+    \end{tikzpicture}
+    \end{center}
+    \footnotesize
+    EDF prioriza o deadline mais próximo: em $t=2$, $\tau_2$ (deadline 7) roda antes de $\tau_1$ (deadline 10). Nenhuma perda. Mesma carga, decisão melhor.
+\end{frame}
+
+\begin{frame}{Resumo dos resultados}
+    \begin{table}
+        \begin{tabularx}{\textwidth}{|l|X|c|c|}
+            \hline
+            \textbf{Conjunto} & \textbf{Utilização} & \textbf{RM} & \textbf{EDF} \\
+            \hline
+            \texttt{feasible} & $U=0{,}71$ (abaixo do limite) & cumpre & cumpre \\
+            \hline
+            \texttt{rm\_fails\_edf\_ok} & $U=0{,}97$ ($<1$) & \textcolor{latecol}{\textbf{perde}} & cumpre \\
+            \hline
+            \texttt{overload} & $U=1{,}10$ ($>1$) & \textcolor{latecol}{perde} & \textcolor{latecol}{perde} \\
+            \hline
+        \end{tabularx}
+    \end{table}
+    \begin{itemize}
+        \item Com $U \le$ limite, ambos cumprem (como prevê o teste).
+        \item Na faixa $0{,}69 < U \le 1$, EDF cumpre onde RM falha.
+        \item Com $U > 1$ (sobrecarga), nenhum algoritmo salva: a teoria e a simulação concordam.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Validação}
+    \begin{itemize}
+        \item \textbf{17 testes automatizados} (\texttt{unittest}), todos passando:
+        \begin{itemize}
+            \item utilização, limite de Liu \& Layland e hiperperíodo;
+            \item RM escolhe menor período; EDF escolhe menor deadline;
+            \item conservação: tempo ocupado de CPU $=$ soma dos $C$ executados;
+            \item segmentos nunca se sobrepõem (um job por vez);
+            \item o caso âncora: RM perde em $t=7$, EDF cumpre.
+        \end{itemize}
+        \item Verificação cruzada \textbf{teoria vs.\ simulação}: o teste analítico e o resultado simulado coincidem em todos os conjuntos.
+    \end{itemize}
+    \begin{center}
+        \small\texttt{\$ python -m unittest discover -s tests} $\rightarrow$ \textcolor{okcol}{\textbf{OK (17 tests)}}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Conclusão}
+    \begin{itemize}
+        \item Simulador a eventos discretos, \textbf{de evento em evento}, com liberação e término de jobs.
+        \item \textbf{Três} algoritmos (RM, DM, EDF) sob uma única abstração de prioridade.
+        \item Saídas para ensino: trace de eventos, Gantt em ASCII (terminal) e SVG (navegador).
+        \item Demonstra na prática a fronteira clássica: prioridade fixa ($\approx$69\%) vs.\ EDF (100\%).
+        \item \textbf{Trabalhos futuros:} recursos compartilhados (eventos de entrada/saída de recurso) e protocolos de herança de prioridade.
+    \end{itemize}
+\end{frame}
+
+%-------------------------------------------------
+\begin{frame}{Perguntas}
+    \begin{center}
+        \Huge Obrigado!\\[0.6em]
+        \normalsize Luis Sena \quad\textbar\quad Antoniel Magalhães\\[0.4em]
+        \small \texttt{github.com/luisfelipesena/rt-scheduler-sim}
+    \end{center}
+\end{frame}
+
+\end{document}

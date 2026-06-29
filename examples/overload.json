@@ -1,0 +1,8 @@
+{
+  "name": "overload",
+  "comment": "U=1.10 > 1. Overloaded: infeasible by any algorithm. Both RM and EDF miss deadlines.",
+  "tasks": [
+    { "id": 1, "name": "T1", "wcet": 2, "period": 4 },
+    { "id": 2, "name": "T2", "wcet": 3, "period": 5 }
+  ]
+}

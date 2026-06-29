@@ -1,0 +1,9 @@
+{
+  "name": "feasible",
+  "comment": "Low utilization (U=0.708 <= Liu-Layland bound). Schedulable by RM, DM and EDF.",
+  "tasks": [
+    { "id": 1, "name": "T1", "wcet": 1, "period": 4 },
+    { "id": 2, "name": "T2", "wcet": 2, "period": 6 },
+    { "id": 3, "name": "T3", "wcet": 1, "period": 8 }
+  ]
+}

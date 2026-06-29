@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="630" height="238" font-family="Helvetica,Arial,sans-serif" font-size="13">
+<rect width="630" height="238" fill="#ffffff"/>
+<text x="70" y="24" font-size="16" font-weight="bold">three_tasks &#183; EDF: FEASIBLE</text>
+<line x1="70" y1="40" x2="70" y2="178" stroke="#888888" stroke-width="1"/>
+<text x="70" y="34" text-anchor="middle" fill="#555">0</text>
+<line x1="96" y1="40" x2="96" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="122" y1="40" x2="122" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="148" y1="40" x2="148" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="174" y1="40" x2="174" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="200" y1="40" x2="200" y2="178" stroke="#888888" stroke-width="1"/>
+<text x="200" y="34" text-anchor="middle" fill="#555">5</text>
+<line x1="226" y1="40" x2="226" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="252" y1="40" x2="252" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="278" y1="40" x2="278" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="304" y1="40" x2="304" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="330" y1="40" x2="330" y2="178" stroke="#888888" stroke-width="1"/>
+<text x="330" y="34" text-anchor="middle" fill="#555">10</text>
+<line x1="356" y1="40" x2="356" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="382" y1="40" x2="382" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="408" y1="40" x2="408" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="434" y1="40" x2="434" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="460" y1="40" x2="460" y2="178" stroke="#888888" stroke-width="1"/>
+<text x="460" y="34" text-anchor="middle" fill="#555">15</text>
+<line x1="486" y1="40" x2="486" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="512" y1="40" x2="512" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="538" y1="40" x2="538" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="564" y1="40" x2="564" y2="178" stroke="#cccccc" stroke-width="1"/>
+<line x1="590" y1="40" x2="590" y2="178" stroke="#888888" stroke-width="1"/>
+<text x="590" y="34" text-anchor="middle" fill="#555">20</text>
+<text x="60" y="67.0" text-anchor="end" font-weight="bold">T1</text>
+<rect x="70" y="46" width="520" height="34" fill="#f6f6f6" stroke="#eeeeee"/>
+<rect x="70" y="46" width="26" height="34" rx="3" fill="#4e79a7" stroke="#333" stroke-width="0.6"/>
+<rect x="174" y="46" width="26" height="34" rx="3" fill="#4e79a7" stroke="#333" stroke-width="0.6"/>
+<rect x="278" y="46" width="26" height="34" rx="3" fill="#4e79a7" stroke="#333" stroke-width="0.6"/>
+<rect x="382" y="46" width="26" height="34" rx="3" fill="#4e79a7" stroke="#333" stroke-width="0.6"/>
+<rect x="486" y="46" width="26" height="34" rx="3" fill="#4e79a7" stroke="#333" stroke-width="0.6"/>
+<path d="M70,82 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M174,82 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M278,82 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M382,82 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M486,82 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M590,82 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M174,53 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M278,53 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M382,53 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M486,53 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M590,53 l-4,-9 l8,0 z" fill="#666666"/>
+<text x="60" y="113.0" text-anchor="end" font-weight="bold">T2</text>
+<rect x="70" y="92" width="520" height="34" fill="#f6f6f6" stroke="#eeeeee"/>
+<rect x="96" y="92" width="26" height="34" rx="3" fill="#f28e2b" stroke="#333" stroke-width="0.6"/>
+<rect x="200" y="92" width="26" height="34" rx="3" fill="#f28e2b" stroke="#333" stroke-width="0.6"/>
+<rect x="330" y="92" width="26" height="34" rx="3" fill="#f28e2b" stroke="#333" stroke-width="0.6"/>
+<rect x="460" y="92" width="26" height="34" rx="3" fill="#f28e2b" stroke="#333" stroke-width="0.6"/>
+<path d="M70,128 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M200,128 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M330,128 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M460,128 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M590,128 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M200,99 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M330,99 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M460,99 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M590,99 l-4,-9 l8,0 z" fill="#666666"/>
+<text x="60" y="159.0" text-anchor="end" font-weight="bold">T3</text>
+<rect x="70" y="138" width="520" height="34" fill="#f6f6f6" stroke="#eeeeee"/>
+<rect x="122" y="138" width="52" height="34" rx="3" fill="#59a14f" stroke="#333" stroke-width="0.6"/>
+<rect x="356" y="138" width="26" height="34" rx="3" fill="#59a14f" stroke="#333" stroke-width="0.6"/>
+<rect x="408" y="138" width="26" height="34" rx="3" fill="#59a14f" stroke="#333" stroke-width="0.6"/>
+<path d="M70,174 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M330,174 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M590,174 l-4,9 l8,0 z" fill="#2ca02c"/>
+<path d="M330,145 l-4,-9 l8,0 z" fill="#666666"/>
+<path d="M590,145 l-4,-9 l8,0 z" fill="#666666"/>
+</svg>

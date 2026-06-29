@@ -39,15 +39,47 @@ python -m rtsim analyze examples/feasible.json
 python -m rtsim run examples/rm_fails_edf_ok.json --algo RM --svg rm.svg
 ```
 
-### Saída em ASCII (no terminal, para a demonstração ao vivo)
+## Demonstração ao vivo
 
-```
+Um único comando roda os dois algoritmos na mesma carga e mostra o veredito lado a lado:
+
+```text
+$ python -m rtsim compare examples/rm_fails_edf_ok.json --algos RM EDF
+
+Taskset: rm_fails_edf_ok   (n=2, hyperperiod=35)
+  task     C    T    D  phase       U
+  T1       2    5    5      0   0.400
+  T2       4    7    7      0   0.571
+  total utilization U = 0.971
+  RM bound  U_lub(2) = 0.828  -> inconclusive (simulate)
+  EDF test  U <= 1       -> FEASIBLE
+
+=== Rate Monotonic (RM) ===
+  -- response times --
+    T1     worst response = 2    OK
+    T2     worst response = 8    MISS (D=7)
+  >>> RM: INFEASIBLE  (1 deadline miss(es): T2.1)
+  -- Gantt --
+     |1234|6789|1234|6789|1234|6789|1234|
+               1         2         3
  T1 |██···██···██···██···██···██···██···|
-    ^    ^    ^    ^    ^    ^    ^    ^
+     ^    ^    ^    ^    ^    ^    ^    ^
  T2 |··███··▒██··███··███··███··███··██·|
-    ^      X      ^      ^      ^      ^
+     ^      X      ^      ^      ^      ^
+
+=== Earliest Deadline First (EDF) ===
+  >>> EDF: FEASIBLE  (no deadline miss)
+  ...
+=== summary (U = 0.971) ===
+  algorithm                 feasible  misses
+  Rate Monotonic            NO        1
+  Earliest Deadline First   yes       0
+  takeaway: EDF meets every deadline where RM does not (same load, U=0.971).
+
 legend: █ running   ▒ running late   · idle   ^ release   v deadline   X miss
 ```
+
+`▒` em `t=7` é a unidade de `T2` que vazou para depois do deadline; `X` marca a perda.
 
 ## Conjuntos de tarefas (`examples/`)
 
@@ -118,8 +150,16 @@ python -m unittest discover -s tests -v
 cd slides && latexmk -pdf main.tex   # gera slides/main.pdf
 ```
 
-- `slides/main.pdf` — apresentação compilada (10 min);
-- `slides/falas.md` — roteiro com as falas de Luis e Antoniel.
+- `slides/main.pdf` — apresentação compilada (15 frames, ~10 min);
+- `slides/falas.md` — roteiro com as falas exatas (Luis: slides 1-7; Antoniel: slides 8-15) e tempos por slide.
+
+Comandos da demonstração ao vivo (deixar copiados antes de apresentar):
+
+```bash
+python -m rtsim compare examples/rm_fails_edf_ok.json --algos RM EDF --verbose
+python -m rtsim run examples/rm_fails_edf_ok.json --algo RM     # só RM, Gantt ASCII
+python -m unittest discover -s tests                            # 17 testes passando
+```
 
 ## Licença
 

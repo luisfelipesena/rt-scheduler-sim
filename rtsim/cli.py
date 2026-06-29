@@ -41,10 +41,12 @@ def _print_result(result: SimulationResult, verbose: bool, gantt: str) -> None:
             "OK" if wr <= task.deadline else f"MISS (D={task.deadline})")
         print(f"    {task.name:<6} worst response = "
               f"{'-' if wr is None else wr:<4} {status}")
-    verdict = "FEASIBLE (no deadline miss)" if result.feasible else (
-        f"INFEASIBLE: {len(result.misses)} deadline miss(es): "
-        + ", ".join(sorted({m.name for m in result.misses})))
-    print(f"  verdict: {verdict}")
+    if result.feasible:
+        verdict = "FEASIBLE  (no deadline miss)"
+    else:
+        names = ", ".join(sorted({m.name for m in result.misses}))
+        verdict = f"INFEASIBLE  ({len(result.misses)} deadline miss(es): {names})"
+    print(f"  >>> {result.policy.short}: {verdict}")
     if gantt == "ascii":
         print("  -- Gantt --")
         print(ascii_gantt(result))
@@ -85,11 +87,21 @@ def cmd_compare(args) -> None:
         _print_result(result, args.verbose, args.gantt)
         results.append(result)
 
-    print("\n=== summary ===")
+    print(f"\n=== summary (U = {ts.utilization:.3f}) ===")
     print(f"  {'algorithm':<26}{'feasible':<10}{'misses'}")
     for r in results:
         print(f"  {r.policy.name:<26}"
               f"{'yes' if r.feasible else 'NO':<10}{len(r.misses)}")
+
+    feasible = [r for r in results if r.feasible]
+    failing = [r for r in results if not r.feasible]
+    if feasible and failing:
+        print(f"  takeaway: {feasible[0].policy.short} meets every deadline where "
+              f"{failing[0].policy.short} does not (same load, U={ts.utilization:.3f}).")
+    elif not failing:
+        print("  takeaway: every algorithm meets all deadlines for this taskset.")
+    else:
+        print(f"  takeaway: overload (U={ts.utilization:.3f} > 1), infeasible for all.")
     if args.svg_dir:
         d = pathlib.Path(args.svg_dir)
         d.mkdir(parents=True, exist_ok=True)
